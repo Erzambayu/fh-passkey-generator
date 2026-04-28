@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Router,
   Network,
@@ -12,54 +12,10 @@ import {
   Check,
   Sparkles,
   X,
-  Loader2,
+  Zap,
 } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-
-function Particles() {
-  const [particles, setParticles] = useState<
-    { id: number; left: string; size: number; delay: string; duration: string; color: string }[]
-  >([]);
-
-  useEffect(() => {
-    const colors = [
-      "rgba(167, 139, 250, 0.3)",
-      "rgba(56, 189, 248, 0.3)",
-      "rgba(244, 114, 182, 0.2)",
-      "rgba(167, 139, 250, 0.15)",
-    ];
-    const p = Array.from({ length: 20 }, (_, i) => ({
-      id: i,
-      left: `${Math.random() * 100}%`,
-      size: Math.random() * 3 + 1,
-      delay: `${Math.random() * 15}s`,
-      duration: `${Math.random() * 15 + 15}s`,
-      color: colors[Math.floor(Math.random() * colors.length)],
-    }));
-    setParticles(p);
-  }, []);
-
-  return (
-    <>
-      {particles.map((p) => (
-        <div
-          key={p.id}
-          className="particle"
-          style={{
-            left: p.left,
-            width: p.size,
-            height: p.size,
-            background: p.color,
-            animationDelay: p.delay,
-            animationDuration: p.duration,
-            zIndex: 1,
-          }}
-        />
-      ))}
-    </>
-  );
-}
 
 export default function Home() {
   const [ssid, setSsid] = useState("");
@@ -71,6 +27,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [showDonate, setShowDonate] = useState(false);
+  const [shakeError, setShakeError] = useState(false);
 
   function generatePassword(ssidInput: string): string | null {
     if (!ssidInput || !ssidInput.toLowerCase().startsWith("fh_")) {
@@ -107,6 +64,8 @@ export default function Home() {
       setPassword("");
       setIsValid(false);
       setLoading(false);
+      setShakeError(true);
+      setTimeout(() => setShakeError(false), 500);
       return false;
     }
   };
@@ -145,42 +104,41 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative">
-      {/* background layers */}
-      <div className="bg-gradient-animated" />
-      <div className="bg-noise" />
-      <Particles />
+      {/* background */}
+      <div className="neo-bg" />
+      <div className="neo-dots" />
 
       {/* main content */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+        transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
         className="flex flex-col items-center gap-5 relative z-10 w-full max-w-md"
       >
         {/* badge */}
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="badge"
+          initial={{ opacity: 0, scale: 0.8, rotate: -3 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          transition={{ delay: 0.15, duration: 0.4, ease: [0.34, 1.56, 0.64, 1] }}
+          className="neo-badge"
         >
-          <Sparkles className="w-3 h-3" />
+          <Zap className="w-3.5 h-3.5" />
           WiFi Password Generator
         </motion.div>
 
         {/* main card */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1, duration: 0.5 }}
-          className="glass-card pulse-glow w-full p-8"
+          initial={{ opacity: 0, y: 20, rotate: -1 }}
+          animate={{ opacity: 1, y: 0, rotate: 0 }}
+          transition={{ delay: 0.1, duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+          className={`neo-card w-full p-7 ${shakeError ? "animate-shake" : ""}`}
         >
           {/* header */}
           <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="p-2.5 rounded-xl bg-gradient-to-br from-violet-500/20 to-blue-500/20 border border-violet-500/20">
-              <Router className="w-6 h-6 text-violet-400" aria-hidden="true" />
+            <div className="sticker p-2.5 rounded-xl bg-primary/20 border-2 border-border">
+              <Router className="w-6 h-6 text-primary-dark" aria-hidden="true" />
             </div>
-            <h1 className="gradient-text font-bold text-2xl tracking-tight">
+            <h1 className="font-bold text-2xl tracking-tight text-text">
               FH Passkey Generator
             </h1>
           </div>
@@ -189,12 +147,12 @@ export default function Home() {
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2">
               <Network
-                className="w-3.5 h-3.5 text-violet-400/70"
+                className="w-3.5 h-3.5 text-primary-dark"
                 aria-hidden="true"
               />
               <label
                 htmlFor="wlan-input"
-                className="text-sm font-semibold text-slate-300 uppercase tracking-wider"
+                className="text-sm font-bold text-text uppercase tracking-wider"
               >
                 SSID Name
               </label>
@@ -203,7 +161,7 @@ export default function Home() {
             <input
               id="wlan-input"
               type="text"
-              className="input-glass px-4 py-3 w-full text-sm"
+              className="input-neo px-4 py-3 w-full text-sm"
               placeholder="fh_XxXxXx / fh_XxXxXx_5G"
               value={ssid}
               onChange={(e) => {
@@ -215,29 +173,26 @@ export default function Home() {
 
             <AnimatePresence>
               {error && (
-                <motion.p
-                  initial={{ opacity: 0, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
-                  className="text-sm text-red-400/90 flex items-center gap-1.5"
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-100 border-2 border-red-400 text-red-600 text-sm font-bold"
                 >
-                  <span className="w-1 h-1 rounded-full bg-red-400 inline-block" />
+                  <span>⚠️</span>
                   {error}
-                </motion.p>
+                </motion.div>
               )}
             </AnimatePresence>
 
             <button
               type="button"
-              className="btn-glow px-4 py-3 text-sm w-full flex items-center justify-center gap-2"
+              className="btn-neo px-4 py-3 text-sm w-full flex items-center justify-center gap-2"
               onClick={handleGetPasskey}
               disabled={loading || !ssid.trim()}
             >
               {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Generating...</span>
-                </>
+                <span>Generating...</span>
               ) : (
                 <>
                   <Key className="w-4 h-4" />
@@ -252,12 +207,12 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-          className="text-sm text-slate-500"
+          transition={{ delay: 0.35, duration: 0.4 }}
+          className="text-sm font-bold text-text-muted"
         >
           is this helpful?{" "}
           <button
-            className="text-violet-400/80 hover:text-violet-300 transition-colors cursor-pointer underline underline-offset-2"
+            className="text-primary-dark hover:text-primary underline underline-offset-4 decoration-2 decoration-primary cursor-pointer transition-colors"
             onClick={() => setShowDonate(true)}
           >
             click here
@@ -268,24 +223,24 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
+          transition={{ delay: 0.45, duration: 0.4 }}
           className="flex items-center gap-3"
         >
           <a
             target="_blank"
             rel="noopener noreferrer"
-            className="social-link"
+            className="social-neo"
             href="https://github.com/erzambayu"
             aria-label="GitHub"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -296,18 +251,18 @@ export default function Home() {
           <a
             target="_blank"
             rel="noopener noreferrer"
-            className="social-link"
+            className="social-neo"
             href="https://instagram.com/erzam.bayu"
             aria-label="Instagram"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -326,30 +281,31 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 z-50 neo-overlay flex items-center justify-center p-4"
             onClick={(e) => {
               if (e.target === e.currentTarget) setShowResult(false);
             }}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-              className="glass-modal p-6 w-full max-w-sm"
+              initial={{ opacity: 0, scale: 0.9, y: 20, rotate: -2 }}
+              animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ duration: 0.35, ease: [0.34, 1.56, 0.64, 1] }}
+              className="neo-modal p-6 w-full max-w-sm"
             >
               {/* modal header */}
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-green-500/10 border border-green-500/20">
-                    <ShieldCheck className="w-4 h-4 text-green-400" />
+                  <div className="sticker p-1.5 rounded-lg bg-accent border-2 border-border">
+                    <ShieldCheck className="w-4 h-4 text-text" />
                   </div>
-                  <h2 className="font-bold text-lg text-slate-100">Passkey</h2>
+                  <h2 className="font-bold text-xl text-text">Passkey</h2>
                 </div>
                 <button
                   onClick={() => setShowResult(false)}
-                  className="p-1.5 rounded-lg hover:bg-white/5 transition-colors cursor-pointer text-slate-500 hover:text-slate-300"
+                  className="p-1.5 rounded-lg border-2 border-border hover:bg-secondary transition-colors cursor-pointer bg-white box-shadow: 2px 2px 0px"
+                  style={{ boxShadow: "2px 2px 0px var(--color-border)" }}
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -357,24 +313,28 @@ export default function Home() {
 
               {/* result info */}
               <div className="flex flex-col gap-3 mb-5">
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                  <Wifi className="w-4 h-4 text-blue-400 shrink-0" />
+                <div className="neo-info flex items-center gap-3 p-3">
+                  <div className="p-1.5 rounded-lg bg-blue-100 border-2 border-border">
+                    <Wifi className="w-4 h-4 text-blue-600" />
+                  </div>
                   <div className="flex flex-col">
-                    <span className="text-[11px] uppercase tracking-wider text-slate-500 font-medium">
+                    <span className="text-[11px] uppercase tracking-wider text-text-muted font-bold">
                       SSID
                     </span>
-                    <span className="text-sm font-semibold text-slate-200">
+                    <span className="text-sm font-bold text-text">
                       {ssid.trim()}
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                  <Key className="w-4 h-4 text-violet-400 shrink-0" />
+                <div className="neo-info flex items-center gap-3 p-3">
+                  <div className="p-1.5 rounded-lg bg-primary/20 border-2 border-border">
+                    <Key className="w-4 h-4 text-primary-dark" />
+                  </div>
                   <div className="flex flex-col">
-                    <span className="text-[11px] uppercase tracking-wider text-slate-500 font-medium">
+                    <span className="text-[11px] uppercase tracking-wider text-text-muted font-bold">
                       Password
                     </span>
-                    <span className="text-sm font-mono font-bold text-violet-300 tracking-wider">
+                    <span className="text-sm font-mono font-bold text-text tracking-wider">
                       {password}
                     </span>
                   </div>
@@ -385,10 +345,8 @@ export default function Home() {
               <button
                 type="button"
                 onClick={handleCopy}
-                className={`w-full px-4 py-3 text-sm flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-300 cursor-pointer ${
-                  copied
-                    ? "bg-green-500/15 text-green-400 border border-green-500/20"
-                    : "btn-glow"
+                className={`w-full px-4 py-3 text-sm flex items-center justify-center gap-2 cursor-pointer ${
+                  copied ? "btn-neo-success" : "btn-neo"
                 }`}
               >
                 {copied ? (
@@ -415,43 +373,46 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 z-50 neo-overlay flex items-center justify-center p-4"
             onClick={(e) => {
               if (e.target === e.currentTarget) setShowDonate(false);
             }}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-              className="glass-modal p-6 w-full max-w-sm"
+              initial={{ opacity: 0, scale: 0.9, y: 20, rotate: 2 }}
+              animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ duration: 0.35, ease: [0.34, 1.56, 0.64, 1] }}
+              className="neo-modal p-6 w-full max-w-sm"
             >
               {/* modal header */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                    <Coffee className="w-4 h-4 text-amber-400" />
+                  <div className="sticker p-1.5 rounded-lg bg-secondary border-2 border-border">
+                    <Coffee className="w-4 h-4 text-text" />
                   </div>
-                  <h2 className="font-bold text-lg text-slate-100">
+                  <h2 className="font-bold text-xl text-text">
                     Buy me a coffee
                   </h2>
                 </div>
                 <button
                   onClick={() => setShowDonate(false)}
-                  className="p-1.5 rounded-lg hover:bg-white/5 transition-colors cursor-pointer text-slate-500 hover:text-slate-300"
+                  className="p-1.5 rounded-lg border-2 border-border hover:bg-secondary transition-colors cursor-pointer bg-white"
+                  style={{ boxShadow: "2px 2px 0px var(--color-border)" }}
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <p className="text-sm text-slate-400 text-center mb-4 leading-relaxed">
+              <p className="text-sm text-text-muted text-center mb-4 leading-relaxed font-bold">
                 Jika aplikasi ini membantu kamu, pertimbangkan untuk memberikan
                 dukungan dengan scan QR code ini ☺️
               </p>
 
-              <div className="flex flex-col items-center justify-center rounded-xl bg-white p-3">
+              <div className="flex flex-col items-center justify-center rounded-xl bg-white p-3 border-2 border-border"
+                style={{ boxShadow: "4px 4px 0px var(--color-border)" }}
+              >
                 <Image
                   src="/qr.png"
                   alt="QR Code"
