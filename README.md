@@ -2,6 +2,8 @@
 
 Generate WiFi passwords from FH router SSIDs.
 
+🌐 **Live Demo**: [erzambayu.github.io/fh-passkey-generator](https://erzambayu.github.io/fh-passkey-generator)
+
 ## How It Works
 
 The password is generated using a **Hex Complement** algorithm:
@@ -27,11 +29,11 @@ Mathematically: `0xABC123 XOR 0xFFFFFF = 0x543EDC`
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 15 (App Router, Static Export)
 - **Styling**: Tailwind CSS v4
-- **UI**: Lucide React icons, Radix UI Dialog
+- **UI**: Lucide React icons, Glassmorphism design
 - **Animation**: Framer Motion
-- **Deployment**: Vercel
+- **Deployment**: GitHub Pages
 
 ## Getting Started
 
@@ -42,26 +44,18 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## API
+## Build
 
-```
-GET /api/generate?ssid=fh_XxXxXx
+```bash
+npm run build
 ```
 
-**Response:**
-```json
-{
-  "success": true,
-  "password": "wlan543edc",
-  "ssid": "fh_ABC123",
-  "message": "Password generated successfully"
-}
-```
+Static output will be generated in the `out/` directory.
 
 ## Author
 
-- GitHub: [@habibulfauzan](https://github.com/habibulfauzan)
-- Instagram: [@habibulfauzan](https://instagram.com/habibulfauzan)
+- GitHub: [@erzambayu](https://github.com/erzambayu)
+- Instagram: [@erzam.bayu](https://instagram.com/erzam.bayu)
 
 ## License
 
